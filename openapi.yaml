@@ -1,0 +1,693 @@
+---
+openapi: 3.0.0
+info:
+  title: Subin Health API
+  description: |2
+
+    # Overview
+    Subin Health API lets you manage patient data, prescriptions, and inventory. You can view, edit, delete patient profiles, history, visits, and medical records. You can also track the medicine inventory based on new prescriptions. <br>This API is REST-based and is documented in OpenAPI format. <br><br>    Base URL for all requests: `https://virtserver.swaggerhub.com/SUBIN23K/Subin_Health/1.0.0`.
+    # Authentication
+    Subin Health API uses API Key authentication. Click `Authorize` and enter a string to generate a new API key.
+    # Use Case
+    ## Prescription and Invoicing
+    You can use Subin Health API to generate prescription after a doctor's consultation and invoice for payment. The endpoints related to inventory check the real-time availability of medicines in your inventory. With the help of historic data from prescriptions, you can proactively restock medicines that are in demand. <br> <br> The following diagram outlines the process flow: <br> ![Flow diagram](https://raw.githubusercontent.com/subin23k/apidocs/main/flow_diagram.png "Flow diagram") <br> When the flow is complete, the system automatically updates the patient's history.
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/SUBIN23K/Subin_Health/1.0.0
+  description: Subin Health API
+tags:
+- name: Patient
+  description: Manage patient data
+- name: History
+  description: Manage patient's history
+- name: Prescriptions
+  description: Manage prescriptions
+- name: Inventory
+  description: Manage inventory
+- name: Invoice
+  description: Manage invoices
+paths:
+  /patient:
+    put:
+      tags:
+      - Patient
+      summary: Update patient profile
+      description: Updates an existing patient's profile.
+      operationId: updatePatient
+      requestBody:
+        $ref: '#/components/requestBodies/Patient'
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+        "405":
+          description: Validation exception
+    post:
+      tags:
+      - Patient
+      summary: Add new patient
+      description: Adds a new patient to the database.
+      operationId: addPatient
+      requestBody:
+        $ref: '#/components/requestBodies/Patient'
+      responses:
+        "200":
+          description: Successful operation
+        "405":
+          description: Invalid input
+  /patient/{patientId}:
+    get:
+      tags:
+      - Patient
+      summary: Retrieve patient profile
+      description: Returns a single patient record.
+      operationId: getPatientId
+      parameters:
+      - name: patientId
+        in: path
+        description: Patient's ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+          example: 324235
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Patient
+      summary: Delete patient
+      description: Deletes a patient's profile
+      operationId: deletePatient
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: patientId
+        in: path
+        description: Patient's ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+          example: 324235
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+  /history/{patientId}:
+    get:
+      tags:
+      - History
+      summary: Find patient history by ID
+      description: Finds history of diseases by patient ID.
+      operationId: getpatientHistory
+      parameters:
+      - name: patientId
+        in: path
+        description: Patient's ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/History'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/History'
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+    delete:
+      tags:
+      - History
+      summary: Delete patient history by ID
+      description: 'Deletes the patient''s history from the database. '
+      operationId: deletepatientHistory
+      parameters:
+      - name: patientId
+        in: path
+        description: Patient's ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+  /prescriptions/{prescriptionId}:
+    get:
+      tags:
+      - Prescriptions
+      summary: Retrieve prescriptions
+      description: Retrieves prescription by prescription ID.
+      operationId: getPrescription
+      parameters:
+      - name: prescriptionId
+        in: path
+        description: Prescription ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+          example: 123124
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+    delete:
+      tags:
+      - Prescriptions
+      summary: Delete prescriptions by patient ID
+      description: Deletes existing prescriptions from the patient's ID.
+      operationId: deletePrescription
+      parameters:
+      - name: prescriptionId
+        in: path
+        description: Prescription ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+          example: 123124
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+  /prescriptions:
+    put:
+      tags:
+      - Prescriptions
+      summary: Update patient's prescription
+      description: Updates a patient's existing prescription.
+      operationId: updatePrescription
+      requestBody:
+        $ref: '#/components/requestBodies/Patient'
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+        "405":
+          description: Validation exception
+    post:
+      tags:
+      - Prescriptions
+      summary: Add new prescription
+      description: Adds a new prescription to the patient's profile.
+      operationId: addPrescription
+      requestBody:
+        $ref: '#/components/requestBodies/Prescription'
+      responses:
+        "200":
+          description: Successful operation
+        "405":
+          description: Invalid input
+  /inventory/{medicine}:
+    get:
+      tags:
+      - Inventory
+      summary: Retrieve inventory status
+      description: Retrieves inventory status of the medicine.
+      operationId: getMedicine
+      parameters:
+      - name: medicine
+        in: path
+        description: Medicine's name
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Dolo 650
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+    put:
+      tags:
+      - Inventory
+      summary: Update stock of medicine
+      description: Updates a patient's existing prescription.
+      operationId: updateMedicine
+      parameters:
+      - name: medicine
+        in: path
+        description: Medicine's name
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Dolo 650
+      requestBody:
+        $ref: '#/components/requestBodies/Patient'
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+        "405":
+          description: Validation exception
+    post:
+      tags:
+      - Inventory
+      summary: Add new medicine
+      description: Adds a new prescription to the patient's profile.
+      operationId: addMedicine
+      parameters:
+      - name: medicine
+        in: path
+        description: Medicine's name
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Dolo 650
+      requestBody:
+        $ref: '#/components/requestBodies/Inventory'
+      responses:
+        "200":
+          description: Successful operation
+        "405":
+          description: Invalid input
+    delete:
+      tags:
+      - Inventory
+      summary: Delete medicine
+      description: Deletes the medicine from inventory.
+      operationId: deleteMedicine
+      parameters:
+      - name: medicine
+        in: path
+        description: Medicine's name
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Dolo 650
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+  /invoice/{invoiceId}:
+    get:
+      tags:
+      - Invoice
+      summary: Retrieve invoice
+      description: Retrieve invoice by ID.
+      operationId: getInvoice
+      parameters:
+      - name: invoiceId
+        in: path
+        description: Invoice ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 68528723792
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        "400":
+          description: Invalid patient ID
+        "404":
+          description: Patient not found
+  /invoice:
+    post:
+      tags:
+      - Invoice
+      summary: Create new invoice
+      description: Creates a new invoice.
+      operationId: addInvoice
+      requestBody:
+        $ref: '#/components/requestBodies/Invoice'
+      responses:
+        "200":
+          description: Successful operation
+        "405":
+          description: Invalid input
+components:
+  schemas:
+    History:
+      type: object
+      properties:
+        patientId:
+          type: integer
+          description: Patient's ID
+          format: int64
+          example: 234796
+        name:
+          type: string
+          description: Patient's name
+          example: Subin
+        medicine:
+          type: string
+          description: Medicine's name
+          example: Dolo 650
+        dosage:
+          type: string
+          description: Medicine's dosage
+          example: 650 mg
+        history:
+          type: array
+          description: Patient's history of diseases
+          items:
+            $ref: '#/components/schemas/History_history'
+        visits:
+          type: integer
+          description: Total number of hospital visits
+          example: 2
+        lastvisit:
+          type: string
+          description: Patient's last hospital visit date
+          example: 01/03/2024
+      xml:
+        name: History
+    Patient:
+      required:
+      - id
+      - insurance
+      - name
+      - phone
+      type: object
+      properties:
+        patientId:
+          type: integer
+          description: Patient's ID
+          format: int64
+          example: 234796
+        name:
+          type: string
+          description: Patient's name
+          example: Subin
+        age:
+          type: integer
+          description: Patient's age
+          format: int64
+          example: 100
+        address:
+          type: string
+          description: Patient's address
+          example: "Bangalore, India"
+        gender:
+          type: string
+          description: Patient's gender
+          example: Male
+        weight:
+          type: integer
+          description: Patient's weight
+          example: 70
+        phone:
+          type: integer
+          description: Patient's contact number
+          format: int64
+          example: 9876543210
+        email:
+          type: string
+          description: Patient's email address
+          example: abc@example.com
+        insurance:
+          type: boolean
+          description: Indicates if the patient has insurance coverage
+          example: true
+        location:
+          type: string
+          description: Patient's location
+          example: Bangalore
+        lastvisit:
+          type: string
+          description: Patient's last hospital visit date
+          example: 01/03/2024
+      xml:
+        name: Patient
+    Prescription:
+      required:
+      - isAvailable
+      - medicine
+      - patientId
+      type: object
+      properties:
+        patientId:
+          type: integer
+          description: Patient's ID
+          format: int64
+          example: 234796
+        medicine:
+          type: string
+          description: Medicine's name
+          example: Dolo 650
+        dosage:
+          type: string
+          description: Medicine's dosage
+          example: 650 mg
+        isRegular:
+          type: boolean
+          description: Indicates if the patient has a recurring subscription to the medicine
+        isAvailable:
+          type: boolean
+          description: Indicates if the medicine is available
+        price:
+          type: integer
+          description: Medicine's price
+          example: 1000
+        currency:
+          type: string
+          description: Currency of medicine's price
+          example: INR
+      xml:
+        name: Prescription
+    Inventory:
+      required:
+      - isAvailable
+      - medicine
+      type: object
+      properties:
+        medicine:
+          type: string
+          description: Medicine's name
+          example: Dolo 650
+        dosage:
+          type: string
+          description: Medicine's dosage
+          example: 650 mg
+        isRegular:
+          type: boolean
+          description: Indicates if the patient has a recurring subscription to the medicine
+        isAvailable:
+          type: boolean
+          description: Indicates if the medicine is available
+        price:
+          type: integer
+          description: Medicine's price
+          example: 1000
+        currency:
+          type: string
+          description: Currency of medicine's price
+          example: INR
+      xml:
+        name: Inventory
+    Invoice:
+      required:
+      - isAvailable
+      - medicine
+      - patientId
+      type: object
+      properties:
+        patientId:
+          type: integer
+          description: Patient's ID
+          format: int64
+          example: 234796
+        name:
+          type: string
+          description: Patient's name
+          example: Subin
+        age:
+          type: integer
+          description: Patient's age
+          format: int64
+          example: 100
+        invoiceDate:
+          type: string
+          description: Invoice date
+          example: 01/03/2024
+        gender:
+          type: string
+          description: Patient's gender
+          example: Male
+        phone:
+          type: integer
+          description: Patient's contact number
+          format: int64
+          example: 9876543210
+        email:
+          type: string
+          description: Patient's email address
+          example: abc@example.com
+        companyaddress:
+          type: string
+          description: Company address
+          example: "Bangalore, India"
+        medicine:
+          type: string
+          description: Medicine's name
+          example: Dolo 650
+        dosage:
+          type: string
+          description: Medicine's dosage
+          example: 650 mg
+        price:
+          type: integer
+          description: Medicine's price
+          example: 1000
+        currency:
+          type: string
+          description: Currency of medicine's price
+          example: INR
+      xml:
+        name: Invoice
+    History_history:
+      type: object
+      properties:
+        disease1:
+          type: string
+          example: Viral Fever
+        disease2:
+          type: string
+          example: Cold
+        disease3:
+          type: string
+          example: Typhoid
+  requestBodies:
+    Patient:
+      description: Object that contains patient data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Patient'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Patient'
+      required: true
+    Prescription:
+      description: Object that contains prescription data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Prescription'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Prescription'
+      required: true
+    Inventory:
+      description: Object that contains inventory data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Inventory'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Inventory'
+      required: true
+    Invoice:
+      description: Object that contains invoice data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Invoice'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Invoice'
+      required: true
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
