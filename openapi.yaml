@@ -181,7 +181,7 @@ paths:
     get:
       tags:
       - Prescriptions
-      summary: Retrieve prescriptions
+      summary: Retrieve prescription
       description: Retrieves prescription by prescription ID.
       operationId: getPrescription
       parameters:
@@ -212,8 +212,8 @@ paths:
     delete:
       tags:
       - Prescriptions
-      summary: Delete prescriptions by patient ID
-      description: Deletes existing prescriptions from the patient's ID.
+      summary: Delete prescription
+      description: Deletes existing prescription.
       operationId: deletePrescription
       parameters:
       - name: prescriptionId
